@@ -17,14 +17,14 @@ Program for writing to Newhaven Display 4x40 Character AZ-Series LCDs
 */
 //---------------------------------------------------------
 
-#include <Wire.h>
 
 #include <Arduino.h>
+#include <Wire.h>
 //---------------------------------------------------------
 
-uint8_t E1	 (1 << 3);
+uint8_t E1	 (1 << 4);
 uint8_t E2   (1 << 2);
-uint8_t D_I	 (1 << 4);
+uint8_t D_I	 (1 << 3);
 // #define R_W	 P3_7;
 // #define DB7..DB0	P1;
 
@@ -42,20 +42,12 @@ void setDatabus(char i) {
   Serial.println();
 }
 
-void Delayms(int n){
-	int i;
-	int j;
-	for (i=0;i<n;i++)
-		for (j=0;j<350;j++)
-		{;}
-}
-
 void command1(char i){
-  setDatabus(i);	//write data on lines 3&4
+    setDatabus(i);	//write data on lines 3&4
 	PORTB &= ~D_I;					//Instruction register
 	// R_W =0;					//write
 	PORTB |=E1;				//pulse enable pin
-  Delayms(2);				//wait 160us, or you can poll the busy flag from now on
+    delay(2);				//wait 160us, or you can poll the busy flag from now on
 
 	PORTB &= ~E1;				//reset enable pin
 }
@@ -64,7 +56,7 @@ void command2(char i){		//command for lines 3&4
 	PORTB &= ~D_I;					//Instruction register
 	// R_W =0;
 	PORTB |=E2;				//pulse enable pin
-  Delayms(2);				//wait 160us, or you can poll the busy flag from now on
+  delay(2);				//wait 160us, or you can poll the busy flag from now on
 
 	PORTB &= ~E2;				//reset enable pin
 }
@@ -73,7 +65,7 @@ void write1(char i){		//write data on lines 1&2
 	PORTB |=D_I;					//Data register
 	// R_W =0;					//write
 	PORTB |=E1;				//pulse enable pin
-  Delayms(2);				//wait 160us, or you can poll the busy flag from now on
+  delay(2);				//wait 160us, or you can poll the busy flag from now on
 
 	PORTB &= ~E1;				//reset enable pin
 }
@@ -82,24 +74,24 @@ void write2(char i){
 	PORTB |=D_I;					//Data register
 	// R_W =0;
 	PORTB |=E2;				//pulse enable pin
-  Delayms(2);				//wait 160us, or you can poll the busy flag from now on
+  delay(2);				//wait 160us, or you can poll the busy flag from now on
 
 	PORTB &= ~E2;				//reset enable pin
 }
-void init(){
-	Delayms(15);			//wait 15ms after power up
+void initScreen(){
+	delay(15);			//wait 15ms after power up
 	command1(0x30);			//wake up controller 1
-	Delayms(5);				//wait 5ms
+	delay(5);				//wait 5ms
 	command2(0x30);			//wake up controller 2
-	Delayms(5);				//wait 5ms
+	delay(5);				//wait 5ms
 	command1(0x30);			//wake up again
-	Delayms(1);				//wait at least 160us
+	delay(1);				//wait at least 160us
 	command2(0x30);
-	Delayms(1);
+	delay(1);
 	command1(0x30);			//wake up 3rd time
-	Delayms(1);				//wait 160us, or you can poll the busy flag from now on
+	delay(1);				//wait 160us, or you can poll the busy flag from now on
 	command2(0x30);
-	Delayms(1);
+	delay(1);
 	command1(0x38);			//set interface length
 	command2(0x38);
 	command1(0x08);			//turn display off
@@ -156,13 +148,12 @@ void setup() {
   PORTB &= ~E2;				//reset enable pin
   PORTB &= ~D_I;				//Instruction register
 	// R_W=0;
-	init();						//initialize display
+	initScreen();						//initialize display
 
   
 }
 
 void loop() {
-  display((char *)"Newhaven Display");			//show the data in array "test"
-  Delayms(1000);
-
+  display((char *)"Newhaven Display1234567890");			//show the data in array "test"
+  delay(1000);
 }
